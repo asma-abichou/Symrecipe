@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ingredient{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Mes Ingredients</h1>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">Numero</th>
+                <th scope="col">Nom</th>
+                <th scope="col">Prix</th>
+                <th scope="col">Date de creation</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for ingredient in ingredients %}
+            <tr class="table-success">
+                <td>{{ ingredient.id }}</td>
+                <td>{{ ingredient.name }}</td>
+                <td>{{ ingredient.price }}</td>
+                <td>{{ ingredient.createdAt|date('d / m / Y') }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
