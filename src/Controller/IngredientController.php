@@ -82,4 +82,17 @@ class IngredientController extends AbstractController
             'form' => $form->createView()
         ]);
     }
+    #[Route('/ingredient/supression/{id}', name: 'ingredient.delete', methods: ['GET','POST'])]
+    public function delete(IngredientRepository $repository): Response
+    {
+        if(!$repository){
+            return $this->redirectToRoute('ingredient.list');
+            $this->addFlash("success", "Ce ingredient n'existe pas");
+        }
+        $this->entityManager->remove($repository);
+        $this->entityManager->flush();
+        $this->addFlash("success", "Votre ingredient a ete bien Supprimer");
+        return $this->redirectToRoute('ingredient.list');
+
+    }
 }
