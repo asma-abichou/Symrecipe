@@ -16,6 +16,11 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class IngredientController extends AbstractController
 {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager
+    )
+    {
+    }
     /**
      * This function display all ingredients
      * @param IngredientRepository $ingredient
@@ -23,7 +28,7 @@ class IngredientController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    #[Route('/ingredient', name: 'ingredient', methods: ['GET'])]
+    #[Route('/ingredient', name: 'ingredient.list', methods: ['GET'])]
     public function index(IngredientRepository $ingredient ,PaginatorInterface $paginator, Request $request): Response
     {
         $ingredient = $paginator->paginate(
@@ -37,21 +42,43 @@ class IngredientController extends AbstractController
         ]);
     }
     #[Route('/ingredient/new', name: 'ingredient.new', methods: ['GET', 'POST'])]
-    public function Create(Request $request , EntityManagerInterface $manager): Response
+    public function Create(Request $request): Response
     {
         $ingredient = new Ingredient();
         $form = $this->createForm(IngredientType::class, $ingredient);
         $form->handleRequest($request);
-        //dd($form->handleRequest($request));
-        if($form->isSubmitted() && $form->isValid()){
-            dd($form);
-            $ingredient = $form ->getData();
-            $manager->persist($ingredient);
-            $manager->flush();
 
-            $this->redirectToRoute('ingredient');
+        if($form->isSubmitted() && $form->isValid()){
+            //dd($form);
+            $ingredient = $form->getData();
+            //dd($ingredient);
+            $this->entityManager->persist($ingredient);
+            $this->entityManager->flush();
+            $this->addFlash( 'success' , 'votre ingredient a ete bien créer');
+
+          return $this->redirectToRoute('ingredient.list');
         }
         return $this->render('pages/ingredient/new.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+    #[Route('/ingredient/edition/{id}', name: 'ingredient.edit', methods: ['GET','POST'])]
+    public function edit(IngredientRepository $repository, $id, Request $request): Response
+    {
+        $ingredient = $repository->findOneBy(['id' => $id]);
+        $form = $this->createForm(IngredientType::class, $ingredient);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()){
+            $ingredient = $form->getData();
+            $this->entityManager->persist($ingredient);
+            $this->entityManager->flush();
+            $this->addFlash( 'success' , 'Votre ingredient a ete bien Modifier');
+
+            return $this->redirectToRoute('ingredient.list');
+        }
+
+        return $this->render('pages/ingredient/edit.html.twig',[
             'form' => $form->createView()
         ]);
     }
