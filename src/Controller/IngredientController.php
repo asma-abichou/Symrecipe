@@ -5,10 +5,10 @@ namespace App\Controller;
 use App\Entity\Ingredient;
 use App\Form\IngredientType;
 use App\Repository\IngredientRepository;
-
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -82,17 +82,18 @@ class IngredientController extends AbstractController
             'form' => $form->createView()
         ]);
     }
-    #[Route('/ingredient/supression/{id}', name: 'ingredient.delete', methods: ['GET','POST'])]
-    public function delete(IngredientRepository $repository): Response
+    #[Route('/ingredient/supression/{id}', name: 'ingredient.delete', methods: ['GET'])]
+    public function delete($id): Response
     {
-        if(!$repository){
+        $ingredient = $this->entityManager->getRepository(Ingredient::class)->find($id);
+
+        if(!$ingredient){
+            $this->addFlash('success', 'Pas ingredient trouver avec id ' . $id);
             return $this->redirectToRoute('ingredient.list');
-            $this->addFlash("success", "Ce ingredient n'existe pas");
         }
-        $this->entityManager->remove($repository);
+        $this->entityManager->remove($ingredient);
         $this->entityManager->flush();
         $this->addFlash("success", "Votre ingredient a ete bien Supprimer");
         return $this->redirectToRoute('ingredient.list');
-
     }
 }
