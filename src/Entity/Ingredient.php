@@ -31,7 +31,7 @@ class Ingredient
     #[Assert\NotBlank()]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\ManyToMany(targetEntity: Recipe::class, mappedBy: 'ingredients')]
+    #[ORM\ManyToMany(targetEntity: Recipe::class, mappedBy: 'ingredient')]
     private Collection $recipes;
 
     public function __construct()
@@ -92,7 +92,7 @@ class Ingredient
     {
         if (!$this->recipes->contains($recipe)) {
             $this->recipes->add($recipe);
-            $recipe->setIngredients($this);
+            $recipe->addIngredient($this);
         }
 
         return $this;
@@ -101,12 +101,11 @@ class Ingredient
     public function removeRecipe(Recipe $recipe): static
     {
         if ($this->recipes->removeElement($recipe)) {
-            // set the owning side to null (unless already changed)
-            if ($recipe->getIngredients() === $this) {
-                $recipe->setIngredients(null);
-            }
+            $recipe->removeIngredient($this);
         }
 
         return $this;
     }
+
+
 }

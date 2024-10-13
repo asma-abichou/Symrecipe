@@ -29,7 +29,6 @@ class AppFixtures extends Fixture
             $manager->persist($ingredient);
         }
         $ingredients[] = $ingredient;
-
         //Recipes
         for ($j=1; $j<=25; $j++)
         {
@@ -42,6 +41,11 @@ class AppFixtures extends Fixture
                    ->setDescription($this->faker->text(300))
                    ->setPrice(mt_rand(0,1)== 1 ? mt_rand(1,1000): null)
                    ->setIsFavorite(mt_rand(0,1) == 1 ? true : false);
+            $manager->persist($recipe);
+            for ($k=1; $k<=25; $k++)
+            {
+                 $recipe->addIngredient($ingredients[mt_rand(0, count($ingredients)-1)]); ;
+            }
             $manager->persist($recipe);
 
         }

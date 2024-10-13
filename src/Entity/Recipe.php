@@ -4,11 +4,12 @@ namespace App\Entity;
 
 use App\Repository\RecipeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints\Collection;
 
 #[UniqueEntity('name')]
 #[ORM\HasLifecycleCallbacks]
@@ -61,8 +62,14 @@ class Recipe
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToMany(targetEntity: Ingredient::class, inversedBy: 'recipes')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Ingredient $ingredients = null;
+    private \Doctrine\Common\Collections\Collection $ingredient;
+
+    public function __construct()
+    {
+        $this->ingredient = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
+    }
 
     public function setCreatedAtValue(): void
     {
@@ -181,15 +188,30 @@ class Recipe
         return $this;
     }
 
-    public function getIngredients(): ?Ingredient
+    /**
+     * @return \Doctrine\Common\Collections\Collection<int, Ingredient>
+     */
+    public function getIngredient(): \Doctrine\Common\Collections\Collection
     {
-        return $this->ingredients;
+        return $this->ingredient;
     }
 
-    public function setIngredients(?Ingredient $ingredients): static
+    public function addIngredient(Ingredient $ingredient): static
     {
-        $this->ingredients = $ingredients;
+        if (!$this->ingredient->contains($ingredient)) {
+            $this->ingredient->add($ingredient);
+        }
 
         return $this;
     }
+
+    public function removeIngredient(Ingredient $ingredient): static
+    {
+        $this->ingredient->removeElement($ingredient);
+
+        return $this;
+    }
+
 }
+
+
