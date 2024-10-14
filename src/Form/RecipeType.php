@@ -146,7 +146,7 @@ class RecipeType extends AbstractType
                 ],
 
                 // used to render a select box, check boxes or radios
-                 'multiple' => true,
+                'multiple' => true,
                 'expanded' => true,
             ])
             ->add('submit', SubmitType::class,[
