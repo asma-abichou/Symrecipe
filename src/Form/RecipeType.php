@@ -2,10 +2,18 @@
 
 namespace App\Form;
 
+use App\Entity\Ingredient;
 use App\Entity\Recipe;
-use Doctrine\DBAL\Types\IntegerType;
+
+use App\Repository\IngredientRepository;
+use Doctrine\ORM\QueryBuilder;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\RangeType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -36,14 +44,70 @@ class RecipeType extends AbstractType
                 'attr'=>[
                     'class' => 'form-control',
                     'min' => '1',
+                    'max' => '1440',
+                    'required' => false
+                ],
+                'label'=> 'Temps (en minutes)',
+                'label_attr'=> [
+                    'class' =>'form-label mt-4'
+                ],
+                'constraints'=> [
+                    new Assert\Positive(),
+                    new Assert\LessThan(1441)
                 ]
             ])
-            ->add('nbPeople')
-            ->add('difficulty')
-            ->add('description')
+            ->add('nbPeople', IntegerType::class, [
+                'attr'=>[
+                    'class' => 'form-control',
+                    'min' => '1',
+                    'max' => '50',
+                    'required' => false
+            ],
+                'label'=> 'Nombre de personnes',
+                'label_attr'=> [
+                    'class' =>'form-label mt-4'
+                ],
+                'constraints'=> [
+                    new Assert\Positive(),
+                    new Assert\LessThan(51)
+                ]
+
+            ])
+            ->add('difficulty', RangeType::class, [
+                 'attr'=>[
+                     'class' => 'form-range',
+                     'min' => '1',
+                     'max' => '5',
+                     'required' => false
+                 ],
+                'label'=> 'Difficulté',
+                'label_attr'=> [
+                    'class' =>'form-label mt-4'
+                ],
+                'constraints'=> [
+                    new Assert\Positive(),
+                    new Assert\LessThan(5)
+                ]
+            ])
+            ->add('description', TextareaType::class, [
+                'attr'=>[
+                    'class' => 'form-control',
+                    'min' => '1',
+                    'max' => '5',
+                    'required' => false
+                ],
+                'label'=> 'Description',
+                'label_attr'=> [
+                    'class' =>'form-label mt-4'
+                ],
+                'constraints'=> [
+                    new Assert\NotBlank()
+                ]
+            ])
             ->add('price', TextType::class, [
                 'attr' =>[
-                    'class' =>'form-control'
+                    'class' =>'form-control',
+                    'required' => false
                 ],
                 'label' => 'Prix',
                 'label_attr'=> [
@@ -54,11 +118,44 @@ class RecipeType extends AbstractType
                     new Assert\LessThan(1001)
                 ]
             ])
-            ->add('isFavorite')
-            ->add('createdAt')
-            ->add('updatedAt')
-            ->add('ingredient')
-            ->add('submit', SubmitType::class)
+            ->add('isFavorite', CheckboxType::class, [
+                'attr' =>[
+                    'class' =>'form-check-input',
+                    'required' => false
+                ],
+                'label' => 'Favoris ?',
+                'label_attr'=> [
+                    'class' =>'form-label'
+                ],
+                'constraints' => [
+                    new Assert\NotNull()
+                ]
+            ])
+            ->add('ingredient', EntityType::class, [
+                 // looks for choices from this entity
+                'class' => Ingredient::class,
+                // uses the User.username property as the visible option string
+                'choice_label' => 'name',
+                'query_builder' => function (IngredientRepository $r): QueryBuilder {
+                        return $r->createQueryBuilder('i')
+                            ->orderBy('i.name', 'ASC');
+                    },
+                'label' => 'Les ingredients',
+                'label_attr'=> [
+                    'class' =>'form-label mt-4'
+                ],
+
+                // used to render a select box, check boxes or radios
+                 'multiple' => true,
+                'expanded' => true,
+            ])
+            ->add('submit', SubmitType::class,[
+                    'attr'=> [
+                        'class' => 'btn btn-primary mt-4'
+                    ],
+                    'label' => 'Mdifier ma recette'
+                ]
+            )
         ;
     }
 

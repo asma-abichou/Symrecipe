@@ -37,8 +37,8 @@
                     <td>{{ recipe.price is same as (null) ? 'Non renseigner ' : recipe.price }}</td>
                     <td>{{ recipe.difficulty is same as (null) ? 'Non renseigner' : recipe.difficulty }}</td>
                     <td>{{ recipe.createdAt|date('d / m / Y') }}</td>
-                    <td>{#<a href="{{ path('ingredient.edit', {id : recipe.id}) }}" class="btn btn-info">Modifier</a>#}</td>
-                    <td>{#<a href="{{ path('ingredient.delete', {id : recipe.id}) }}" class="btn btn-danger">supprimer</a>#}</td>
+                    <td><a href="{{ path('recipe.edit', {id : recipe.id}) }}" class="btn btn-info">Modifier</a></td>
+                    <td><a href="{{ path('recipe.delete', {id : recipe.id}) }}" class="btn btn-danger">supprimer</a></td>
 
                 </tr>
             {% endfor %}

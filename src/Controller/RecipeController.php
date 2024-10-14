@@ -52,4 +52,38 @@ class RecipeController extends AbstractController
             'form' => $form->createView()
         ]);
     }
+    #[Route('/recette/edition/{id}', name: 'recipe.edit', methods: ['GET','POST'])]
+    public function edit(RecipeRepository $repository, $id, Request $request): Response
+    {
+        $recipe = $repository->findOneBy(['id' => $id]);
+        $form = $this->createForm(RecipeType::class, $recipe);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()){
+            $recipe = $form->getData();
+            $this->entityManager->persist($recipe);
+            $this->entityManager->flush();
+            $this->addFlash( 'success' , 'Votre recette a ete bien Modifier');
+
+            return $this->redirectToRoute('recipe.list');
+        }
+
+        return $this->render('pages/recipe/edit.html.twig',[
+            'form' => $form->createView()
+        ]);
+    }
+    #[Route('/recette/supression/{id}', name: 'recipe.delete', methods: ['GET'])]
+    public function delete($id): Response
+    {
+        $recipe = $this->entityManager->getRepository(recipe::class)->find($id);
+
+        if(!$recipe){
+            $this->addFlash('danger', 'Pas recette trouver avec id ' . $id);
+            return $this->redirectToRoute('recipe.list');
+        }
+        $this->entityManager->remove($recipe);
+        $this->entityManager->flush();
+        $this->addFlash("success", "Votre recette a ete bien Supprimer");
+        return $this->redirectToRoute('recipe.list');
+    }
 }
