@@ -57,12 +57,8 @@ class AppFixtures extends Fixture
             $user->setFullName($this->faker->name())
                  ->setPseudo($this->faker->firstName())
                  ->setEmail($this->faker->email())
-                 ->setRoles(['ROLE_USER']);
-            $hashPassword = $this->hasher->hashPassword(
-                $user,
-                'password'
-                );
-            $user->setPassword($hashPassword);
+                 ->setRoles(['ROLE_USER'])
+                 ->setPlainPassword('password');
             $manager->persist($user);
         }
         $manager->flush();
