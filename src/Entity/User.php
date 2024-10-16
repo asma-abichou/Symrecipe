@@ -8,7 +8,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\EntityListeners('../src/EntityListener/UserListener')]
+#[ORM\EntityListeners('/App/EntityListener/UserListener')] //creation d un service
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]

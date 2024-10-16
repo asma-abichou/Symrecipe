@@ -9,17 +9,14 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Faker\Generator;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+
 
 
 class AppFixtures extends Fixture
 {
     private Generator $faker;
-    private UserPasswordHasherInterface $hasher;
-    public function __construct(UserPasswordHasherInterface $hasher)
+    public function __construct()
     {
-        $this->hasher = $hasher;
         $this->faker = Factory::create('fr_FR');
     }
     public function load(ObjectManager $manager): void
