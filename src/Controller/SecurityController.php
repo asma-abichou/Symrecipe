@@ -19,17 +19,19 @@ class SecurityController extends AbstractController
     #[Route('/connexion', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-       // dd('hi');
         $lastUsername = $authenticationUtils->getLastUsername();
         return $this->render('security/login.html.twig', [
             'last_username' => $lastUsername,
         ]);
     }
+
+
     #[Route('/logout', name: 'app_logout', methods:['POST','GET'])]
     public function logout(): Response
     {
         return $this->render('security/login.html.twig');
     }
+
     #[Route('/inscription', name: 'security.register', methods:['POST','GET'])]
     public function Registration(Request $request): Response
     {
