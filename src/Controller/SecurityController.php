@@ -12,21 +12,27 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
-
-    public function __construct(private readonly  EntityManagerInterface $entityManager){
+    public function __construct(private  EntityManagerInterface $entityManager){
 
     }
     #[Route('/connexion', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
+        if ($this->getUser()) {
+            return $this->redirectToRoute('recipe.list');
+        }
+
+        $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
+
         return $this->render('security/login.html.twig', [
             'last_username' => $lastUsername,
+            'error' => $error,
         ]);
     }
 
 
-    #[Route('/logout', name: 'app_logout', methods:['POST','GET'])]
+    #[Route('/deconnexion', name: 'app_logout', methods:['GET'])]
     public function logout(): Response
     {
         return $this->render('security/login.html.twig');
@@ -48,14 +54,10 @@ class SecurityController extends AbstractController
                 'votre compte a bien été créer');
 
         }
-
-
         return $this->render('security/registration.html.twig', [
             'form' => $form->createView(),
         ]);
 
     }
-
-
 
 }
